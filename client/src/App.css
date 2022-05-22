@@ -37,42 +37,8 @@
   }
 } */
 
-nav {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+.App {
+  font-family: "Plus Jakarta Sans", sans-serif;
 
-  padding: 2rem;
-  background-color: bisque;
-}
-
-.Logo {
-  display: flex;
-  column-gap: 1rem;
-  align-items: center;
-}
-
-.Shape {
-  animation: morphing 1s infinite forwards;
-  background-color: aqua;
-  width: 45px;
-  height: 40px;
-}
-
-@keyframes morphing {
-  0% {
-    clip-path: circle(20% at var(--random-position));
-  }
-  100% {
-    /* clip-path: polygon(
-      17% 17%,
-      33% 44%,
-      77% 0,
-      66% 66%,
-      100% 100%,
-      40% 60%,
-      7% 88%
-    ); */
-    clip-path: circle(20% at var(--random-position));
-  }
+  background-color: var(--background-color);
 }

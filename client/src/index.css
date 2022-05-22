@@ -13,5 +13,9 @@ code {
 }
 
 :root {
-  --random-position: 25% 50%;
+  --background-color: #efead8;
+  --element-primary: #5f7161;
+  --element-secondary: #6d8b74;
+  --text-primary: #ffffff;
+  --text-secondary: #f0a04b;
 }

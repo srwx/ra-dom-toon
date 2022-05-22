@@ -1,0 +1,50 @@
+.container {
+  padding: 2rem;
+
+  display: flex;
+  justify-content: center;
+}
+
+.header {
+  font-size: 600;
+}
+
+/* nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  padding: 2rem;
+  background-color: bisque;
+}
+
+.logo {
+  display: flex;
+  column-gap: 1rem;
+  align-items: center;
+} */
+
+/* .Shape {
+  animation: morphing 1s infinite forwards;
+  background-color: aqua;
+  width: 45px;
+  height: 40px;
+} */
+
+/* @keyframes morphing {
+  0% {
+    clip-path: circle(20% at var(--random-position));
+  }
+  100% {
+     clip-path: polygon(
+        17% 17%,
+        33% 44%,
+        77% 0,
+        66% 66%,
+        100% 100%,
+        40% 60%,
+        7% 88%
+      ); 
+    clip-path: circle(20% at var(--random-position));
+  }
+} */

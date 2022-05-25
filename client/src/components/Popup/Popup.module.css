@@ -1,0 +1,38 @@
+.backdrop {
+  width: 100vw;
+  height: 100vh;
+
+  background-color: rgba(255, 255, 255, 0.4);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+
+  background-color: var(--element-primary);
+}
+
+.header {
+  padding: 0.5rem;
+  text-align: center;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.submit_wrapper {
+  padding-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.submit {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--text-secondary);
+
+  cursor: pointer;
+}

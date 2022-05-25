@@ -1,0 +1,7 @@
+.container {
+  padding: 0.25rem 0;
+}
+
+.title {
+  color: var(--text-primary);
+}

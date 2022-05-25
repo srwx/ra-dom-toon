@@ -19,3 +19,9 @@ code {
   --text-primary: #ffffff;
   --text-secondary: #f0a04b;
 }
+
+#modal-root {
+  position: absolute;
+  top: 0;
+  left: 0;
+}

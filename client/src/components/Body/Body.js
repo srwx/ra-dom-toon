@@ -8,8 +8,8 @@ const cards = ["card1", "card2", "card3"];
 export default function Body() {
   const [modalActive, setModalActive] = useState(false);
 
-  const handleAddEvent = () => {
-    setModalActive(true);
+  const toggleAddEventPopup = () => {
+    setModalActive(!modalActive);
   };
 
   return (
@@ -20,7 +20,7 @@ export default function Body() {
           <h2>Trending in RA DOM TOON</h2>
         </div>
 
-        <div className={styles.button} onClick={handleAddEvent}>
+        <div className={styles.button} onClick={toggleAddEventPopup}>
           Add event
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function Body() {
         ))}
       </div>
 
-      {modalActive && <Popup />}
+      {modalActive && <Popup closePopup={toggleAddEventPopup} />}
     </div>
   );
 }

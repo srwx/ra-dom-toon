@@ -40,5 +40,6 @@
 .App {
   font-family: "Plus Jakarta Sans", sans-serif;
 
+  min-height: 100vh;
   background-color: var(--background-color);
 }

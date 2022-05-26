@@ -1,5 +1,7 @@
 .container {
   padding: 1rem;
+
+  overflow: hidden;
 }
 
 .top_bar {

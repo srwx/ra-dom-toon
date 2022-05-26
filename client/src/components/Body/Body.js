@@ -27,7 +27,7 @@ export default function Body() {
 
       <div className={styles.cards_container}>
         {cards.map((card, index) => (
-          <Card key={index} index={index} />
+          <Card key={index} index={index} id={card} />
         ))}
       </div>
 

@@ -1,13 +1,21 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import "./App.css";
 
 import Nav from "components/Nav";
 import Body from "components/Body";
+import CampaignDetail from "components/CampaignDetail";
 
 function App() {
   return (
     <div className="App">
-      <Nav />
-      <Body />
+      <BrowserRouter>
+        <Nav />
+        <Routes>
+          <Route path="/" element={<Body />} />
+          <Route path=":id" element={<CampaignDetail />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

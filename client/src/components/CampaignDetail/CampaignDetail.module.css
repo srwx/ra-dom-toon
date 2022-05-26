@@ -1,0 +1,12 @@
+.container {
+  padding: 1rem;
+}
+
+.listContainer {
+  padding: 0.5rem;
+}
+
+.listTitle {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}

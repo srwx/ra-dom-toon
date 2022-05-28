@@ -13,7 +13,7 @@ function App() {
         <Nav />
         <Routes>
           <Route path="/" element={<Body />} />
-          <Route path=":id" element={<CampaignDetail />} />
+          <Route path=":address" element={<CampaignDetail />} />
         </Routes>
       </BrowserRouter>
     </div>

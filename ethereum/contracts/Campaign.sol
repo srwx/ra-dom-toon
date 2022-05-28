@@ -4,75 +4,66 @@ pragma solidity ^0.8.9; // Tell version of solidity that we used to writing code
 
 contract CampaignFactory {
     address[] deployedCampaigns;
+    string[] campaignsName;
 
-    function createCampaign(uint minimum) public {
-        Campaign newCampaign = new Campaign(minimum, msg.sender);
+    function createCampaign(string memory campaignName, uint requiredBalance, uint requiredCost) public returns (address) {
+        Campaign newCampaign = new Campaign(msg.sender, campaignName, requiredBalance, requiredCost);
         deployedCampaigns.push(address(newCampaign));
+        campaignsName.push(campaignName);
+        return address(newCampaign);
     }
 
-    function getDeployedCampaigns() public view returns (address[] memory) {
-        return deployedCampaigns;
+    function getDeployedCampaigns() public view returns (address[] memory, string[] memory) {
+        return (deployedCampaigns, campaignsName);
     }
 }
 
 contract Campaign {
-    struct Request {
-        string description;
-        uint value;
-        address payable recipient;
+    struct Information {
+        address payable manager;
+        string name;
+        uint requiredBalance;
+        uint requiredCost;
+        mapping(address => uint) contributors; // Mapping of contributor who donated to this campaign
+        uint contributorsCount;
         bool complete;
-        uint votedCount;
-        mapping(address => bool) votedPeople;
     }
 
-    address public manager;
-    uint public minimumContribution;
-    mapping(address => bool) public approvers; // Mapping of contributor who donated to this campaign
-    uint public approversCount;
+    Information campaign;
 
-    uint numRequests; // Index for requests mapping
-    mapping(uint => Request) requests; // Like array of Requests
-
-    modifier checkManager() {
-        require(msg.sender == manager);
-        _;
+    constructor(address creator, string memory campaignName, uint balance, uint cost) {
+        campaign.manager = payable(creator);
+        campaign.name = campaignName;
+        campaign.requiredBalance = balance;
+        campaign.requiredCost = cost;
+        campaign.contributorsCount = 0;
+        campaign.complete = false;
     }
 
-    constructor(uint minimum, address creator) {
-        manager = creator;
-        minimumContribution = minimum;
+    function getCampaign() public view returns (address, uint, string memory, uint, uint, uint, bool) {
+        Information storage c = campaign;
+        return (c.manager, address(this).balance, c.name, c.requiredBalance, c.requiredCost, c.contributorsCount, c.complete);
     }
 
-    function contribute() public payable {
-        require(msg.value > minimumContribution);
-        approvers[msg.sender] = true;
-        approversCount++;
+    function contribute(uint donate) public payable {
+        require(!campaign.complete);
+        
+        if(campaign.requiredCost == 0) {
+            campaign.contributors[msg.sender] = donate;
+            campaign.contributorsCount++;
+        } else {
+            require(msg.value >= campaign.requiredCost);
+            campaign.contributors[msg.sender] = donate;
+            campaign.contributorsCount++;
+        }
+
+        if(address(this).balance >= campaign.requiredBalance) {
+            campaign.manager.transfer(address(this).balance);
+            campaign.complete = true;
+        }
     }
 
-    function createRequest(string memory description, uint value, address payable recipient) public checkManager {
-        Request storage newRequest = requests[numRequests++];
-        newRequest.description = description;
-        newRequest.value = value;
-        newRequest.recipient = recipient;
-        newRequest.complete = false;
-        newRequest.votedCount = 0;
-    }
-
-    function approveRequest(uint index) public {
-        Request storage updateRequest = requests[index]; 
-        require(approvers[msg.sender]); // Check this account is donated to this campaign
-        require(!updateRequest.votedPeople[msg.sender]); // Check this account not voted yet
-
-        updateRequest.votedPeople[msg.sender] = true;
-        updateRequest.votedCount++;
-    }
-
-    function finalizeRequest(uint index) public checkManager {
-        Request storage closeRequest = requests[index];
-        require(!closeRequest.complete); // Check this request is not complete
-        require(closeRequest.votedCount > (approversCount / 2));
-
-        closeRequest.recipient.transfer(closeRequest.value); // Send money in amount of closeRequest.value to recipient address
-        closeRequest.complete = true;
+    function getContributorDonate() public view returns (uint) {
+        return campaign.contributors[msg.sender];
     }
 }

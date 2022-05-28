@@ -6,8 +6,8 @@ contract CampaignFactory {
     address[] deployedCampaigns;
     string[] campaignsName;
 
-    function createCampaign(string memory campaignName, uint requiredBalance, uint requiredCost) public returns (address) {
-        Campaign newCampaign = new Campaign(msg.sender, campaignName, requiredBalance, requiredCost);
+    function createCampaign(string memory campaignName, uint requiredBalance, uint requiredCost, uint256 deadline) public returns (address) {
+        Campaign newCampaign = new Campaign(msg.sender, campaignName, requiredBalance, requiredCost, deadline);
         deployedCampaigns.push(address(newCampaign));
         campaignsName.push(campaignName);
         return address(newCampaign);
@@ -27,22 +27,24 @@ contract Campaign {
         mapping(address => uint) contributors; // Mapping of contributor who donated to this campaign
         uint contributorsCount;
         bool complete;
+        uint256 deadline;
     }
 
     Information campaign;
 
-    constructor(address creator, string memory campaignName, uint balance, uint cost) {
+    constructor(address creator, string memory campaignName, uint balance, uint cost, uint256 deadline) {
         campaign.manager = payable(creator);
         campaign.name = campaignName;
         campaign.requiredBalance = balance;
         campaign.requiredCost = cost;
         campaign.contributorsCount = 0;
         campaign.complete = false;
+        campaign.deadline = deadline;
     }
 
-    function getCampaign() public view returns (address, uint, string memory, uint, uint, uint, bool) {
+    function getCampaign() public view returns (address, uint, string memory, uint, uint, uint, bool, uint256) {
         Information storage c = campaign;
-        return (c.manager, address(this).balance, c.name, c.requiredBalance, c.requiredCost, c.contributorsCount, c.complete);
+        return (c.manager, address(this).balance, c.name, c.requiredBalance, c.requiredCost, c.contributorsCount, c.complete, c.deadline);
     }
 
     function contribute(uint donate) public payable {
@@ -65,5 +67,10 @@ contract Campaign {
 
     function getContributorDonate() public view returns (uint) {
         return campaign.contributors[msg.sender];
+    }
+
+    function claim() public payable {
+        require(block.timestamp >= campaign.deadline);
+        payable(msg.sender).transfer(campaign.contributors[msg.sender]);
     }
 }

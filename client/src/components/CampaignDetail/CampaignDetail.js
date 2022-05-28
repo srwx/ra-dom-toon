@@ -13,11 +13,13 @@ const ListItem = ({ title, value }) => (
 
 export default function CampaignDetail() {
   const [campaign, setCampaign] = useState({});
+  const [input, setInput] = useState();
   const { address } = useParams();
+
+  const deployedCampaign = campaignInstance(address);
 
   useEffect(() => {
     const fetchCampaign = async () => {
-      const deployedCampaign = campaignInstance(address);
       const res = await deployedCampaign.methods.getCampaign().call();
 
       /* Convert Wei to Ether */
@@ -27,7 +29,7 @@ export default function CampaignDetail() {
 
       /* Destructuring response from contract to object */
       const data = {
-        address: res[0],
+        manager: res[0],
         balance: res[1],
         name: res[2],
         requiredBalance: res[3],
@@ -42,13 +44,32 @@ export default function CampaignDetail() {
     fetchCampaign();
   }, []);
 
+  const handleDonate = async () => {
+    const userAccount = await web3.eth.getAccounts();
+    const donateWei = web3.utils.toWei(input, "ether");
+    await deployedCampaign.methods.contribute(donateWei).send({
+      from: userAccount[0],
+      value: donateWei,
+    });
+    console.log("success");
+  };
+
   return (
     <div className={styles.container}>
-      <ListItem title="Campaign Address" value={campaign.address} />
+      <ListItem title="Campaign Address" value={address} />
       <ListItem title="Campaign name" value={campaign.name} />
       <ListItem title="Donation" value={campaign.balance} />
       <ListItem title="Goal" value={campaign.requiredBalance} />
       <ListItem title="Contributions" value={campaign.contributorsCount} />
+      <div>
+        <input
+          type="number"
+          onChange={(e) => {
+            setInput(e.target.value);
+          }}
+        />
+        <button onClick={handleDonate}>Donate</button>
+      </div>
     </div>
   );
 }

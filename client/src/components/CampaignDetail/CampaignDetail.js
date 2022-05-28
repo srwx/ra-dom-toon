@@ -14,6 +14,8 @@ const ListItem = ({ title, value }) => (
 export default function CampaignDetail() {
   const [campaign, setCampaign] = useState({});
   const [input, setInput] = useState();
+  const [isDonating, setIsDonating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { address } = useParams();
 
   const deployedCampaign = campaignInstance(address);
@@ -45,13 +47,18 @@ export default function CampaignDetail() {
   }, []);
 
   const handleDonate = async () => {
+    setIsDonating(true);
     const userAccount = await web3.eth.getAccounts();
     const donateWei = web3.utils.toWei(input, "ether");
-    await deployedCampaign.methods.contribute(donateWei).send({
-      from: userAccount[0],
-      value: donateWei,
-    });
-    console.log("success");
+    try {
+      await deployedCampaign.methods.contribute(donateWei).send({
+        from: userAccount[0],
+        value: donateWei,
+      });
+    } catch (exception) {
+      setErrorMessage("Error: failed to donate");
+    }
+    setIsDonating(false);
   };
 
   return (
@@ -61,14 +68,20 @@ export default function CampaignDetail() {
       <ListItem title="Donation" value={campaign.balance} />
       <ListItem title="Goal" value={campaign.requiredBalance} />
       <ListItem title="Contributions" value={campaign.contributorsCount} />
-      <div>
+      <div className={styles.errorMessage}>{errorMessage}</div>
+      <div className={styles.donateContainer}>
         <input
           type="number"
           onChange={(e) => {
             setInput(e.target.value);
           }}
         />
-        <button onClick={handleDonate}>Donate</button>
+
+        {isDonating ? (
+          <div className={styles.loader} />
+        ) : (
+          <button onClick={handleDonate}>Donate</button>
+        )}
       </div>
     </div>
   );

@@ -9,18 +9,18 @@ export default function Body() {
   const [campaigns, setCampaigns] = useState([]);
 
   useEffect(() => {
-    const fetchCampaigns = async () => {
-      const campaignsList = [];
-      const res = await factoryInstance.methods.getDeployedCampaigns().call();
-
-      for (let i = 0; i < res[0].length; i++) {
-        campaignsList.push({ address: res[0][i], name: res[1][i] });
-      }
-      setCampaigns(campaignsList);
-    };
-
     fetchCampaigns();
   }, []);
+
+  const fetchCampaigns = async () => {
+    const campaignsList = [];
+    const res = await factoryInstance.methods.getDeployedCampaigns().call();
+
+    for (let i = 0; i < res[0].length; i++) {
+      campaignsList.push({ address: res[0][i], name: res[1][i] });
+    }
+    setCampaigns(campaignsList);
+  };
 
   const toggleAddEventPopup = () => {
     setModalActive(!modalActive);

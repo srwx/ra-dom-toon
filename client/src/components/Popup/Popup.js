@@ -7,6 +7,8 @@ import web3 from "utils/web3";
 
 export default function Popup({ closePopup }) {
   const [formData, setFormData] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const backdropRef = useRef(null);
 
   useEffect(() => {
@@ -25,17 +27,26 @@ export default function Popup({ closePopup }) {
   };
 
   const handleSubmit = async () => {
+    setIsSubmitting(true);
     const userAccount = await web3.eth.getAccounts();
-    const deployedCampaign = await factoryInstance.methods
-      .createCampaign(
-        formData.name,
-        web3.utils.toWei(formData.goal, "ether") /* Required balance */,
-        web3.utils.toWei(formData.min, "ether") /* Required cost */
-      )
-      .send({
-        from: userAccount[0],
-      });
-    console.log(deployedCampaign);
+
+    console.log(new Date(formData.deadline).getTime());
+
+    try {
+      await factoryInstance.methods
+        .createCampaign(
+          formData.name,
+          web3.utils.toWei(formData.goal, "ether") /* Required balance */,
+          web3.utils.toWei(formData.min, "ether") /* Required cost */
+        )
+        .send({
+          from: userAccount[0],
+        });
+    } catch (exception) {
+      setErrorMessage("Error creating a campaign");
+    }
+
+    setIsSubmitting(false);
   };
 
   const handleClose = (e) => {
@@ -68,14 +79,19 @@ export default function Popup({ closePopup }) {
         />
         <Input
           title="Deadline"
-          type="date"
+          type="datetime-local"
           field="deadline"
           syncFunction={handleInput}
         />
+        <div className={styles.errorMessage}>{errorMessage}</div>
         <div className={styles.submit_wrapper}>
-          <div className={styles.submit} onClick={handleSubmit}>
-            submit
-          </div>
+          {isSubmitting ? (
+            <div className={styles.loader} />
+          ) : (
+            <div className={styles.submit} onClick={handleSubmit}>
+              submit
+            </div>
+          )}
         </div>
       </div>
     </div>,

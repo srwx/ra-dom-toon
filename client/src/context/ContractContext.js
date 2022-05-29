@@ -38,7 +38,7 @@ export const ContractProvider = ({ children }) => {
 
   const fetchCampaigns = async () => {
     const campaignsList = [];
-    const completed = [];
+
     const res = await factoryInstance.methods.getDeployedCampaigns().call();
 
     for (let i = 0; i < res[0].length; i++) {
@@ -50,13 +50,22 @@ export const ContractProvider = ({ children }) => {
     }
 
     for (let i = 0; i < res[0].length; i++) {
-      completed.push(
-        await campaignInstance(res[0][i]).methods.getIsComplete().call()
-      );
+      campaignsList[i].isCompleted = await campaignInstance(res[0][i])
+        .methods.getIsComplete()
+        .call();
     }
+
+    campaignsList.map((e, i) => {
+      let res = false;
+      if (e.deadline < Math.round(Date.now() / 1000)) {
+        res = true;
+      }
+      e.isExpired = res;
+      return e;
+    });
+
     console.log(campaignsList);
-    console.log(completed);
-    console.log(Math.round(Date.now() / 1000));
+
     setCampaigns(campaignsList);
   };
 

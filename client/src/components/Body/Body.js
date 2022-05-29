@@ -7,7 +7,6 @@ import { ContractContext } from "context/ContractContext";
 export default function Body() {
   const [modalActive, setModalActive] = useState(false);
   const { campaigns } = useContext(ContractContext);
-  console.log(campaigns);
   const toggleAddEventPopup = () => {
     setModalActive(!modalActive);
   };

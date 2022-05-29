@@ -30,14 +30,16 @@ export default function Popup({ closePopup }) {
     setIsSubmitting(true);
     const userAccount = await web3.eth.getAccounts();
 
-    console.log(new Date(formData.deadline).getTime());
+    let deadline = new Date(formData.deadline).getTime();
+    deadline = Math.round(deadline / 1000);
 
     try {
       await factoryInstance.methods
         .createCampaign(
           formData.name,
           web3.utils.toWei(formData.goal, "ether") /* Required balance */,
-          web3.utils.toWei(formData.min, "ether") /* Required cost */
+          web3.utils.toWei(formData.min, "ether") /* Required cost */,
+          deadline
         )
         .send({
           from: userAccount[0],

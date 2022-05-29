@@ -16,6 +16,7 @@ export default function CampaignDetail() {
   const [input, setInput] = useState();
   const [isDonating, setIsDonating] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [currentTime, setCurrentTime] = useState();
   const { address } = useParams();
 
   const deployedCampaign = campaignInstance(address);
@@ -38,9 +39,11 @@ export default function CampaignDetail() {
         requiredCost: res[4],
         contributorsCount: res[5],
         isComplete: res[6],
+        deadline: res[7],
       };
 
       setCampaign(data);
+      setCurrentTime(Math.round(new Date().getTime() / 1000));
     };
 
     fetchCampaign();
@@ -61,6 +64,18 @@ export default function CampaignDetail() {
     setIsDonating(false);
   };
 
+  const handleClaim = async () => {
+    try {
+      const userAccount = await web3.eth.getAccounts();
+      await deployedCampaign.methods.claim().send({
+        from: userAccount[0],
+      });
+      console.log("success");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <ListItem title="Campaign Address" value={address} />
@@ -70,18 +85,25 @@ export default function CampaignDetail() {
       <ListItem title="Contributions" value={campaign.contributorsCount} />
       <div className={styles.errorMessage}>{errorMessage}</div>
       <div className={styles.donateContainer}>
-        <input
-          type="number"
-          onChange={(e) => {
-            setInput(e.target.value);
-          }}
-        />
-
         {isDonating ? (
           <div className={styles.loader} />
         ) : (
-          <button onClick={handleDonate}>Donate</button>
+          <>
+            <input
+              type="number"
+              onChange={(e) => {
+                setInput(e.target.value);
+              }}
+            />
+            <button onClick={handleDonate}>Donate</button>
+          </>
         )}
+      </div>
+
+      <div>
+        {currentTime > campaign.deadline ? (
+          <button onClick={handleClaim}>Claim</button>
+        ) : null}
       </div>
     </div>
   );

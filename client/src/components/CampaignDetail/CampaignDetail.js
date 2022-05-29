@@ -34,6 +34,7 @@ export default function CampaignDetail() {
       res[3] = web3.utils.fromWei(res[3], "ether"); /* Required balance */
       res[4] = web3.utils.fromWei(res[4], "ether"); /* Required donation */
 
+      console.log(res[1]);
       /* Destructuring response from contract to object */
       const data = {
         manager: res[0],
@@ -59,11 +60,12 @@ export default function CampaignDetail() {
     const userAccount = await web3.eth.getAccounts();
     const donateWei = web3.utils.toWei(input, "ether");
     try {
-      await deployedCampaign.methods.contribute(donateWei).send({
+      await deployedCampaign.methods.contribute().send({
         from: userAccount[0],
         value: donateWei,
       });
     } catch (exception) {
+      console.log(exception);
       setErrorMessage("Error: failed to donate");
     }
     setIsDonating(false);

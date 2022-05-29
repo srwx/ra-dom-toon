@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import factoryInstance from "utils/factoryInstance";
 import campaignInstance from "utils/campaignInstance";
-// import Web3 from "web3";
 
 export const ContractContext = React.createContext();
 
@@ -10,7 +9,7 @@ const { ethereum } = window;
 
 export const ContractProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState("");
-  const [Campaigns, setCampaigns] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
 
   const accountWasChanged = (accounts) => {
     setCurrentAccount(accounts[0]);
@@ -39,12 +38,25 @@ export const ContractProvider = ({ children }) => {
 
   const fetchCampaigns = async () => {
     const campaignsList = [];
+    const completed = [];
     const res = await factoryInstance.methods.getDeployedCampaigns().call();
-    console.log(res);
 
     for (let i = 0; i < res[0].length; i++) {
-      campaignsList.push({ address: res[0][i], name: res[1][i] });
+      campaignsList.push({
+        address: res[0][i],
+        name: res[1][i],
+        deadline: res[2][i],
+      });
     }
+
+    for (let i = 0; i < res[0].length; i++) {
+      completed.push(
+        await campaignInstance(res[0][i]).methods.getIsComplete().call()
+      );
+    }
+    console.log(campaignsList);
+    console.log(completed);
+    console.log(Math.round(Date.now() / 1000));
     setCampaigns(campaignsList);
   };
 
@@ -59,7 +71,7 @@ export const ContractProvider = ({ children }) => {
 
   return (
     <ContractContext.Provider
-      value={{ currentAccount, Campaigns, fetchCampaigns }}
+      value={{ currentAccount, campaigns, fetchCampaigns }}
     >
       {children}
     </ContractContext.Provider>

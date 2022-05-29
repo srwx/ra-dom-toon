@@ -6,8 +6,8 @@ import { ContractContext } from "context/ContractContext";
 
 export default function Body() {
   const [modalActive, setModalActive] = useState(false);
-  const { Campaigns } = useContext(ContractContext);
-  console.log(Campaigns);
+  const { campaigns } = useContext(ContractContext);
+  console.log(campaigns);
   const toggleAddEventPopup = () => {
     setModalActive(!modalActive);
   };
@@ -26,7 +26,7 @@ export default function Body() {
       </div>
 
       <div className={styles.cards_container}>
-        {Campaigns.map((campaign, index) => (
+        {campaigns.map((campaign, index) => (
           <Card key={index} index={index} campaign={campaign} />
         ))}
       </div>

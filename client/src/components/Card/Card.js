@@ -22,7 +22,7 @@ export default function Card({ index, campaign }) {
     <Link to={`/` + campaign.address}>
       <div
         className={styles.container}
-        style={{ "--delay": (index + 1) / 2 + "s" }}
+        style={{ "--delay": (index + 1) / 20 + "s" }}
       >
         <img src="https://picsum.photos/96" alt="" className={styles.image} />
 

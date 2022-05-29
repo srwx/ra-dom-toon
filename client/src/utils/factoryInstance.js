@@ -1,7 +1,7 @@
 import web3 from "./web3";
 import deployedFactory from "../build/CampaignFactory.json";
 
-const deployedAddress = "0xd827Eb57d8B53a5eE1ad8A449E481AfbaBDA893D";
+const deployedAddress = "0x101F4E15e03C41Ac985e8Af5b6783504CD508da8";
 
 const factoryInstance = new web3.eth.Contract(
   deployedFactory.abi,

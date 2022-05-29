@@ -88,6 +88,7 @@ contract Campaign {
     function claim() public payable {
         require(block.timestamp >= campaign.deadline);
         payable(msg.sender).transfer(campaign.contributors[msg.sender]);
+        delete campaign.contributors[msg.sender];
     }
 
     function getIsComplete() public view returns (bool) {

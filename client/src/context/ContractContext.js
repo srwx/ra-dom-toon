@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import factoryInstance from "utils/factoryInstance";
 import campaignInstance from "utils/campaignInstance";
+import web3 from "utils/web3";
 
 export const ContractContext = React.createContext();
 
@@ -11,16 +12,16 @@ export const ContractProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState("");
   const [campaigns, setCampaigns] = useState([]);
 
-  const accountWasChanged = (accounts) => {
-    setCurrentAccount(accounts[0]);
-    console.log("accountWasChanged");
+  const accountWasChanged = async () => {
+    const userAddress = await web3.eth.getAccounts();
+    setCurrentAccount(userAddress[0]);
   };
 
   const checkIfWalletIsConnect = async () => {
     try {
       if (!ethereum) return alert("Please install MetaMask.");
 
-      const accounts = await ethereum.request({ method: "eth_accounts" });
+      const accounts = await web3.eth.getAccounts();
 
       if (accounts.length) {
         //if user already connected to their metamask
@@ -63,8 +64,6 @@ export const ContractProvider = ({ children }) => {
       e.isExpired = res;
       return e;
     });
-
-    console.log(campaignsList);
 
     setCampaigns(campaignsList);
   };

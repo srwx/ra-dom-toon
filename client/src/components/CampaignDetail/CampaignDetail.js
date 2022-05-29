@@ -23,9 +23,38 @@ export default function CampaignDetail() {
 
   const deployedCampaign = campaignInstance(address);
 
+  const status = () => {
+    if (currentTime > campaign.deadline && campaign.isContributed > 0) {
+      return <button onClick={handleClaim}>Claim</button>;
+    }
+    if (campaign.isContributed > 0) {
+      return <h4>You already donated</h4>;
+    }
+    if (currentTime < campaign.deadline && !campaign.isComplete) {
+      return (
+        <>
+          {isDonating ? (
+            <div className={styles.loader} />
+          ) : (
+            <>
+              <input
+                type="number"
+                onChange={(e) => {
+                  setInput(e.target.value);
+                }}
+              />
+              <button onClick={handleDonate}>Donate</button>
+            </>
+          )}
+        </>
+      );
+    }
+  };
+
   const fetchCampaign = async () => {
+    const userAccounts = await web3.eth.getAccounts();
     const res = await deployedCampaign.methods.getCampaign().call({
-      from: currentAccount,
+      from: userAccounts[0],
     });
 
     /* Convert Wei to Ether */
@@ -51,7 +80,7 @@ export default function CampaignDetail() {
 
   useEffect(() => {
     fetchCampaign();
-  }, []);
+  }, [currentAccount]);
 
   const handleDonate = async () => {
     setIsDonating(true);
@@ -76,6 +105,7 @@ export default function CampaignDetail() {
         from: currentAccount,
       });
       console.log("success");
+      fetchCampaign();
     } catch (err) {
       console.log(err);
     }
@@ -89,27 +119,9 @@ export default function CampaignDetail() {
       <ListItem title="Goal" value={campaign.requiredBalance} />
       <ListItem title="Contributions" value={campaign.contributorsCount} />
       <div className={styles.errorMessage}>{errorMessage}</div>
-      <div className={styles.donateContainer}>
-        {isDonating ? (
-          <div className={styles.loader} />
-        ) : (
-          <>
-            <input
-              type="number"
-              onChange={(e) => {
-                setInput(e.target.value);
-              }}
-            />
-            <button onClick={handleDonate}>Donate</button>
-          </>
-        )}
-      </div>
+      <div className={styles.donateContainer}></div>
 
-      <div>
-        {currentTime > campaign.deadline && campaign.isContributed > 0 ? (
-          <button onClick={handleClaim}>Claim</button>
-        ) : null}
-      </div>
+      <div>{status()}</div>
     </div>
   );
 }

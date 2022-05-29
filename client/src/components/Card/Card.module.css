@@ -29,5 +29,34 @@
 
 .infos {
   padding: 1rem;
-  flex-grow: 1;
+  max-width: 30%;
+}
+
+.infos div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status {
+  padding-right: 1rem;
+  align-self: center;
+}
+
+.status div {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.achieved {
+  background-color: green;
+}
+
+.expired {
+  background-color: red;
+}
+
+@media (min-width: 640px) {
+  .infos {
+    max-width: 60%;
+  }
 }

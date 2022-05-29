@@ -57,8 +57,9 @@ contract Campaign {
         ** Case2 : Required contributor number
         */
 
-        require(!campaign.complete);    
-        
+        require(!campaign.complete, "campaign already completed");    
+        require(msg.value >= campaign.requiredCost, "value less than requirement");
+
         /* Donate session */
         if(campaign.minimumContributor == 0) {
             /* Case1 */
@@ -66,7 +67,6 @@ contract Campaign {
             campaign.contributorsCount++;
         } else {
             /* Case2 */
-            require(msg.value >= campaign.requiredCost);
             campaign.contributors[msg.sender] = msg.value;
             campaign.contributorsCount++;
         }

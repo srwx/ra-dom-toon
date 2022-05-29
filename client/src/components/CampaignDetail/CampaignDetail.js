@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import web3 from "utils/web3";
 import styles from "./CampaignDetail.module.css";
 import campaignInstance from "utils/campaignInstance";
+import { ContractContext } from "context/ContractContext";
 
 const ListItem = ({ title, value }) => (
   <div className={styles.listContainer}>
@@ -18,62 +19,61 @@ export default function CampaignDetail() {
   const [errorMessage, setErrorMessage] = useState("");
   const [currentTime, setCurrentTime] = useState();
   const { address } = useParams();
+  const { currentAccount, fetchCampaigns } = useContext(ContractContext);
 
   const deployedCampaign = campaignInstance(address);
 
-  useEffect(() => {
-    const fetchCampaign = async () => {
-      const userAccount = await web3.eth.getAccounts();
-      const res = await deployedCampaign.methods.getCampaign().call({
-        from: userAccount[0],
-      });
-      console.log(res);
+  const fetchCampaign = async () => {
+    const res = await deployedCampaign.methods.getCampaign().call({
+      from: currentAccount,
+    });
 
-      /* Convert Wei to Ether */
-      res[1] = web3.utils.fromWei(res[1], "ether"); /* Campaign balance */
-      res[3] = web3.utils.fromWei(res[3], "ether"); /* Required balance */
-      res[4] = web3.utils.fromWei(res[4], "ether"); /* Required donation */
+    /* Convert Wei to Ether */
+    res[1] = web3.utils.fromWei(res[1], "ether"); /* Campaign balance */
+    res[3] = web3.utils.fromWei(res[3], "ether"); /* Required balance */
+    res[4] = web3.utils.fromWei(res[4], "ether"); /* Required donation */
 
-      /* Destructuring response from contract to object */
-      const data = {
-        manager: res[0],
-        balance: res[1],
-        name: res[2],
-        requiredBalance: res[3],
-        requiredCost: res[4],
-        contributorsCount: res[5],
-        isComplete: res[6],
-        deadline: res[7],
-        isContributed: res[8],
-      };
-
-      setCampaign(data);
-      setCurrentTime(Math.round(new Date().getTime() / 1000));
+    /* Destructuring response from contract to object */
+    const data = {
+      manager: res[0],
+      balance: res[1],
+      name: res[2],
+      requiredBalance: res[3],
+      requiredCost: res[4],
+      contributorsCount: res[5],
+      isComplete: res[6],
+      deadline: res[7],
+      isContributed: res[8],
     };
+    setCampaign(data);
+    setCurrentTime(Math.round(new Date().getTime() / 1000));
+  };
 
+  useEffect(() => {
     fetchCampaign();
   }, []);
 
   const handleDonate = async () => {
     setIsDonating(true);
-    const userAccount = await web3.eth.getAccounts();
     const donateWei = web3.utils.toWei(input, "ether");
     try {
-      await deployedCampaign.methods.contribute(donateWei).send({
-        from: userAccount[0],
+      await deployedCampaign.methods.contribute().send({
+        from: currentAccount,
         value: donateWei,
       });
     } catch (exception) {
+      console.log(exception);
       setErrorMessage("Error: failed to donate");
     }
     setIsDonating(false);
+    fetchCampaign();
+    fetchCampaigns();
   };
 
   const handleClaim = async () => {
     try {
-      const userAccount = await web3.eth.getAccounts();
       await deployedCampaign.methods.claim().send({
-        from: userAccount[0],
+        from: currentAccount,
       });
       console.log("success");
     } catch (err) {

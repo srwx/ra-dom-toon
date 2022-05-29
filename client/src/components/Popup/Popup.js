@@ -1,15 +1,17 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { createPortal } from "react-dom";
 import Input from "components/Input";
 import styles from "./Popup.module.css";
 import factoryInstance from "utils/factoryInstance";
 import web3 from "utils/web3";
+import { ContractContext } from "context/ContractContext";
 
 export default function Popup({ closePopup }) {
   const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const backdropRef = useRef(null);
+  const { fetchCampaigns } = useContext(ContractContext);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -30,23 +32,28 @@ export default function Popup({ closePopup }) {
     setIsSubmitting(true);
     const userAccount = await web3.eth.getAccounts();
 
-    console.log(new Date(formData.deadline).getTime());
+    let deadline = new Date(formData.deadline).getTime();
+    deadline = Math.round(deadline / 1000);
 
     try {
       await factoryInstance.methods
         .createCampaign(
           formData.name,
           web3.utils.toWei(formData.goal, "ether") /* Required balance */,
-          web3.utils.toWei(formData.min, "ether") /* Required cost */
+          web3.utils.toWei(formData.min, "ether") /* Required cost */,
+          deadline,
+          0
         )
         .send({
           from: userAccount[0],
         });
     } catch (exception) {
+      console.log(exception);
       setErrorMessage("Error creating a campaign");
     }
-
     setIsSubmitting(false);
+    closePopup();
+    fetchCampaigns();
   };
 
   const handleClose = (e) => {

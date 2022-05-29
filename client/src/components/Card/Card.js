@@ -2,14 +2,13 @@ import { Link } from "react-router-dom";
 import styles from "./Card.module.css";
 
 export default function Card({ index, campaign }) {
-  const isExpire = new Date().getTime() > 0;
-  const goalReached = false;
-
   const status = () => {
-    if (goalReached) {
+    if (!campaign.isExpired && !campaign.isCompleted) return;
+
+    if (campaign.isCompleted) {
       return <div className={styles.achieved}>Goal reached!</div>;
     }
-    if (isExpire) {
+    if (campaign.isExpired) {
       return <div className={styles.expired}>Expired</div>;
     }
   };

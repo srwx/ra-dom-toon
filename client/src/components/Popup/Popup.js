@@ -42,7 +42,7 @@ export default function Popup({ closePopup }) {
           web3.utils.toWei(formData.goal, "ether") /* Required balance */,
           web3.utils.toWei(formData.min, "ether") /* Required cost */,
           deadline,
-          0
+          formData.minimumContributor
         )
         .send({
           from: userAccount[0],
@@ -82,6 +82,12 @@ export default function Popup({ closePopup }) {
           title="Minimum donation"
           type="number"
           field="min"
+          syncFunction={handleInput}
+        />
+        <Input
+          title="Minimum contributor"
+          type="number"
+          field="minnimumContributor"
           syncFunction={handleInput}
         />
         <Input

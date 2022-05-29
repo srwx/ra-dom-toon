@@ -1,27 +1,13 @@
 import Card from "components/Card";
 import Popup from "components/Popup";
-import { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 import styles from "./Body.module.css";
-import factoryInstance from "utils/factoryInstance";
+import { ContractContext } from "context/ContractContext";
 
 export default function Body() {
   const [modalActive, setModalActive] = useState(false);
-  const [campaigns, setCampaigns] = useState([]);
-
-  useEffect(() => {
-    fetchCampaigns();
-  }, []);
-
-  const fetchCampaigns = async () => {
-    const campaignsList = [];
-    const res = await factoryInstance.methods.getDeployedCampaigns().call();
-
-    for (let i = 0; i < res[0].length; i++) {
-      campaignsList.push({ address: res[0][i], name: res[1][i] });
-    }
-    setCampaigns(campaignsList);
-  };
-
+  const { Campaigns } = useContext(ContractContext);
+  console.log(Campaigns);
   const toggleAddEventPopup = () => {
     setModalActive(!modalActive);
   };
@@ -40,7 +26,7 @@ export default function Body() {
       </div>
 
       <div className={styles.cards_container}>
-        {campaigns.map((campaign, index) => (
+        {Campaigns.map((campaign, index) => (
           <Card key={index} index={index} campaign={campaign} />
         ))}
       </div>

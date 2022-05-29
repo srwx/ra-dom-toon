@@ -87,7 +87,7 @@ export default function Popup({ closePopup }) {
         <Input
           title="Minimum contributor"
           type="number"
-          field="minnimumContributor"
+          field="minimumContributor"
           syncFunction={handleInput}
         />
         <Input

@@ -73,6 +73,7 @@ export default function CampaignDetail() {
       isComplete: res[6],
       deadline: res[7],
       isContributed: res[8],
+      minimumContributor: res[9],
     };
     setCampaign(data);
     setCurrentTime(Math.round(new Date().getTime() / 1000));
@@ -115,8 +116,13 @@ export default function CampaignDetail() {
     <div className={styles.container}>
       <ListItem title="Campaign Address" value={address} />
       <ListItem title="Campaign name" value={campaign.name} />
-      <ListItem title="Donation" value={campaign.balance} />
+      <ListItem title="Balance" value={campaign.balance} />
       <ListItem title="Goal" value={campaign.requiredBalance} />
+      <ListItem title="Mininum donation" value={campaign.requiredCost} />
+      <ListItem
+        title="Required contributor"
+        value={campaign.minimumContributor}
+      />
       <ListItem title="Contributions" value={campaign.contributorsCount} />
       <div className={styles.errorMessage}>{errorMessage}</div>
       <div className={styles.donateContainer}></div>

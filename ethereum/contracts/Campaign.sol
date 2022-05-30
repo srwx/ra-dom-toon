@@ -46,9 +46,9 @@ contract Campaign {
         campaign.minimumContributor = min; 
     }
 
-    function getCampaign() public view returns (address, uint, string memory, uint, uint, uint, bool, uint256, uint) {
+    function getCampaign() public view returns (address, uint, string memory, uint, uint, uint, bool, uint256, uint, uint) {
         Information storage c = campaign;
-        return (c.manager, address(this).balance, c.name, c.requiredBalance, c.requiredCost, c.contributorsCount, c.complete, c.deadline, c.contributors[msg.sender]);
+        return (c.manager, address(this).balance, c.name, c.requiredBalance, c.requiredCost, c.contributorsCount, c.complete, c.deadline, c.contributors[msg.sender], c.minimumContributor);
     }
 
     function contribute() public payable {

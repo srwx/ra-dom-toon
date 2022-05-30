@@ -1,6 +1,41 @@
 import { Link } from "react-router-dom";
 import styles from "./Card.module.css";
 
+function timeConverter(UNIX_timestamp) {
+  var a = new Date(UNIX_timestamp * 1000);
+  var months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
+
+  var time =
+    date +
+    " " +
+    month +
+    " " +
+    year +
+    " " +
+    ("0" + hour).slice(-2) +
+    ":" +
+    ("0" + min).slice(-2);
+  return time;
+}
+
 export default function Card({ index, campaign }) {
   const status = () => {
     if (!campaign.isExpired && !campaign.isCompleted) return;
@@ -29,7 +64,7 @@ export default function Card({ index, campaign }) {
         <div className={styles.infos}>
           <div>{shortenedAddress}</div>
           <div>{campaign.name}</div>
-          <div>see more</div>
+          <div>Deadline: {timeConverter(campaign.deadline)}</div>
         </div>
 
         <div className={styles.status}>{status()}</div>
